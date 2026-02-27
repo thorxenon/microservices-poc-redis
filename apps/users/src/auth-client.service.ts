@@ -19,7 +19,6 @@ export class AuthClientService {
     const response = await firstValueFrom(
       this.authClient.send<VerifyTokenResponse>('auth.verify_token', { token }),
     );
-    console.log(response);
 
     if (!response?.valid || !response.user) {
       throw new UnauthorizedException('Token inválido');
