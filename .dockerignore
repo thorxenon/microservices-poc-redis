@@ -1,0 +1,26 @@
+# Arquivos e pastas a serem ignorados pelo Docker
+# Isso evita que arquivos desnecessários ou sensíveis sejam copiados para a imagem
+
+# Dependências locais
+node_modules
+
+# Arquivos de log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Pasta de build (será gerada dentro do Docker)
+dist
+
+# Arquivos de ambiente (serão fornecidos em tempo de execução)
+.env
+
+apps/*.env
+
+# Configurações do editor
+.vscode
+.idea
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
