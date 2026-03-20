@@ -11,6 +11,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { OAuthController } from './oauth.controller';
 import { AuthRpcController } from './auth.rpc.controller';
 import { OAuthClient } from './entities/oauth-client.entity';
+import { getJwtPrivateKey, getJwtPublicKey } from './utils/jwt-keys.util';
 
 @Module({
   imports: [
@@ -36,8 +37,19 @@ import { OAuthClient } from './entities/oauth-client.entity';
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET', 'dev-secret'),
-        signOptions: { expiresIn: '1h' },
+        privateKey: getJwtPrivateKey(configService),
+        publicKey: getJwtPublicKey(configService),
+        signOptions: {
+          algorithm: 'RS256',
+          expiresIn: '1h',
+          issuer: configService.get<string>('JWT_ISSUER', 'auth-service'),
+          audience: configService.get<string>('JWT_AUDIENCE', 'microservices'),
+        },
+        verifyOptions: {
+          algorithms: ['RS256'],
+          issuer: configService.get<string>('JWT_ISSUER', 'auth-service'),
+          audience: configService.get<string>('JWT_AUDIENCE', 'microservices'),
+        },
       }),
     }),
   ],

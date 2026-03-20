@@ -5,12 +5,24 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
+    const rmqUser = process.env.RMQ_USER ?? 'guest';
+    const rmqPassword = process.env.RMQ_PASSWORD ?? 'guest';
+    const rmqHost = process.env.RMQ_HOST ?? 'localhost';
+    const rmqPort = Number(process.env.RMQ_PORT ?? 5672);
+    const rmqQueue = process.env.RMQ_AUTH_QUEUE ?? 'auth_queue';
+
+    const rmqUrl =
+      process.env.RMQ_URL ??
+      `amqp://${rmqUser}:${rmqPassword}@${rmqHost}:${rmqPort}`;
 
   app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.REDIS,
+    transport: Transport.RMQ,
     options: {
-      host: process.env.REDIS_HOST ?? 'localhost',
-      port: Number(process.env.REDIS_PORT ?? 6379),
+        urls: [rmqUrl],
+        queue: rmqQueue,
+        queueOptions: {
+          durable: true,
+        },
     },
   });
 

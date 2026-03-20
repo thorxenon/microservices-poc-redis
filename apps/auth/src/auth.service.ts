@@ -242,11 +242,20 @@ export class AuthService {
 
   async verifyAccessToken(accessToken: string) {
     try {
+      const issuer = this.configService.get<string>('JWT_ISSUER', 'auth-service');
+      const audience = this.configService.get<string>('JWT_AUDIENCE', 'microservices');
+
       const payload = await this.jwtService.verifyAsync<{
         sub: number;
         email: string;
         scope?: string;
-      }>(accessToken);
+      }>(accessToken, {
+        algorithms: ['RS256'],
+        issuer,
+        audience,
+      });
+
+      console.log(payload);
 
       return {
         valid: true,
